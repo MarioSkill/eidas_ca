@@ -1,6 +1,6 @@
 				#############################################################
-				# Dockerfile - eIDAS 	1.4.0			            #
-				# 						      	    #
+				# Dockerfile - eIDAS 	1.4.0			                    #
+				# 						      	                            #
 				#############################################################
 
 FROM ubuntu:16.04
@@ -24,6 +24,7 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-oracle/
 ENV EIDAS_VERSION 1.4.0
 ENV TOMCAT_VERSION 8.5.27
 ENV WEB_SERVER_PATH /usr/local/src/tomcat
+
 
 ENV EIDAS_PATH /usr/local/src/eidas
 RUN mkdir $EIDAS_PATH
@@ -121,14 +122,6 @@ RUN chmod 777 replace.sh
 RUN "./replace.sh"
 RUN cp /usr/local/src/eidas/config/tomcat/encryptionConf.xml /usr/local/src/eidas/config/       
 
-RUN echo "#!/bin/bash" >> changeIP.sh
-RUN echo "old='localhost:8080'" >> changeIP.sh
-RUN echo "new='148.247.201.141:8080'" >> changeIP.sh
-RUN echo "grep -rl \$old /usr/local/src/eidas/config/tomcat | xargs sed -i s@\$old@\$new@g" >> changeIP.sh
-
-RUN chmod 777 changeIP.sh
-RUN "./changeIP.sh"
-
 WORKDIR /home/server
 #EXPOSE 9002
 RUN echo "#!/bin/bash" >> start.sh
@@ -137,3 +130,10 @@ RUN echo "/usr/local/src/tomcat/bin/catalina.sh start" >> start.sh
 RUN chmod +x start.sh
 EXPOSE 8080
 
+RUN echo "#!/bin/bash" >> changeIP.sh
+RUN echo "old='localhost:8080'" >> changeIP.sh
+RUN echo "new=\"\$1\"':8080'" >> changeIP.sh
+RUN echo "grep -rl \$old /usr/local/src/eidas/config/tomcat | xargs sed -i s@\$old@\$new@g" >> changeIP.sh
+#RUN echo "./start.sh"
+
+RUN chmod +x changeIP.sh
